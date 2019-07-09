@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+<!--引入数据源的配置文件-->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+
+    <!--数据源dataSource
+    sqlSessionFactoryBean(数据源 mybatis.xml  别名 mapper的映射文件) MapperScannerConfiguer(扫描mapper接口)
+    -->
+    <!--配置数据源-->
+    <bean class="com.mchange.v2.c3p0.ComboPooledDataSource" id="dataSource">
+        <property name="driverClass" value="${jdbc.driverClass}"/>
+        <property name="jdbcUrl" value="${jdbc.url}"/>
+        <property name="user" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+
+    <!--配置SqlSessionFactory-->
+    <bean class="org.mybatis.spring.SqlSessionFactoryBean" id="sqlSessionFactoryBean">
+        <!--加载dao层的配置文件-->
+        <property name="configLocation" value="classpath:mybatis/mybatis.xml"/>
+
+        <!--注入数据源  ref:将配置数据源id="dataSource" 注入ref-->
+        <property name="dataSource" ref="dataSource"/>
+
+        <!--配置别名  value="com.wang_idea.pojo" 是子工程gossip_pojo下的包-->
+        <property name="typeAliasesPackage" value="com.wang_idea.pojo"/>
+
+        <!--用于加载mapper文件-->
+        <property name="mapperLocations" value="classpath:mapper/*"/>
+    </bean>
+
+    <!--做批量的mapper接口扫描-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--dao层所在接口的包-->
+        <property name="basePackage" value="com.wang_idea.mapper"/>
+    </bean>
+</beans>
